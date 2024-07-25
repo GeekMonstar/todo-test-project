@@ -1,0 +1,55 @@
+.container{
+  position: relative;
+  .projects, .todos, .todo-show{
+    position: absolute;
+    padding: 30px 10px;
+    width: 100%;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background: #FFF;
+    box-shadow: 0 0 10px #00000011;
+  }
+  .projects{
+    z-index: 2;
+    .projects-container{
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    a{
+      color: #000;
+      border-radius: 5px;
+      padding: 5px;
+      text-decoration: none;
+      &.active{
+        background: #2700d425;
+        color: #2700d4;
+        font-weight: 600;
+      }
+    }
+  }
+  .todos{
+    z-index: 3;
+    .todos-container{
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+  }
+  .todo-show{
+    z-index: 4;
+  }
+}
+@media(min-width: 768px){
+  .container{
+    display: flex;
+    // gap: 10px;
+    .projects, .todos, .todo-show{
+      position: relative;
+    }
+    .projects{
+      width: 400px;
+    }
+  }
+}
