@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "dev": "npx concurrently -n [TypeScript,Node] -c [#3178C6,#5FA04E] \"npx tsc --watch\" \"nodemon dist/index.js\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -11,5 +12,17 @@
   "license": "ISC",
   "devDependencies": {
     "@tsconfig/node20": "^20.1.4"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.17.0",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "concurrently": "^8.2.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "nodemon": "^3.1.4",
+    "prisma": "^5.17.0",
+    "typescript": "^5.5.4"
   }
 }

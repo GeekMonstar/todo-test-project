@@ -15,6 +15,8 @@ model User {
   fullname String
   nickname String
   email String
+  password String
+  role String @default("USER")
   Projects Project[]
 }
 
