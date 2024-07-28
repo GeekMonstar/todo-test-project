@@ -9,45 +9,26 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.indexProjects = indexProjects;
-exports.showProject = showProject;
-exports.createProject = createProject;
-exports.destroyProject = destroyProject;
-exports.editProject = editProject;
+exports.indexTodos = indexTodos;
+exports.showTodo = showTodo;
+exports.createTodo = createTodo;
+exports.destroyTodo = destroyTodo;
+exports.editTodo = editTodo;
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
-function indexProjects(req, res) {
+function indexTodos(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const projects = yield prisma.project.findMany();
-            if (projects) {
-                res.status(200).json(projects);
-            }
-            else {
-                res.status(200).send("Aucun project");
-            }
-            prisma.$disconnect();
-        }
-        catch (err) {
-            console.log(err);
-            res.json(err);
-        }
-    });
-}
-function showProject(req, res) {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            const { projectId } = req.params;
-            const project = yield prisma.project.findUnique({
-                where: {
-                    id: parseInt(projectId)
+            const todos = yield prisma.todo.findMany({
+                include: {
+                    project: true
                 }
             });
-            if (project) {
-                res.status(200).json(project);
+            if (todos) {
+                res.status(200).json(todos);
             }
             else {
-                res.status(200).send("Aucun project");
+                res.status(200).send("Aucun todo");
             }
             prisma.$disconnect();
         }
@@ -57,22 +38,50 @@ function showProject(req, res) {
         }
     });
 }
-function createProject(req, res) {
+function showTodo(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const { name, description } = req.body;
-            const project = yield prisma.project.create({
+            const { todoId } = req.params;
+            const todo = yield prisma.todo.findUnique({
+                where: {
+                    id: parseInt(todoId)
+                },
+                include: {
+                    project: true
+                }
+            });
+            if (todo) {
+                res.status(200).json(todo);
+            }
+            else {
+                res.status(200).send("Aucun todo");
+            }
+            prisma.$disconnect();
+        }
+        catch (err) {
+            console.log(err);
+            res.json(err);
+        }
+    });
+}
+function createTodo(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const { title, description } = req.body;
+            const { projectId } = req.params;
+            console.log(req.params);
+            const todo = yield prisma.todo.create({
                 data: {
-                    name: name,
+                    title: title,
                     description: description,
-                    ownerId: 1
+                    projectId: parseInt(projectId)
                 }
             });
-            if (project) {
-                res.status(200).json(project);
+            if (todo) {
+                res.status(200).json(todo);
             }
             else {
-                res.status(200).send("Aucun project");
+                res.status(200).send("Aucun todo");
             }
             prisma.$disconnect();
         }
@@ -82,20 +91,20 @@ function createProject(req, res) {
         }
     });
 }
-function destroyProject(req, res) {
+function destroyTodo(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const { projectId } = req.params;
-            const project = yield prisma.project.delete({
+            const { todoId } = req.params;
+            const todo = yield prisma.todo.delete({
                 where: {
-                    id: parseInt(projectId)
+                    id: parseInt(todoId)
                 }
             });
-            if (project) {
-                res.status(200).json(project);
+            if (todo) {
+                res.status(200).json(todo);
             }
             else {
-                res.status(200).send("Aucun project");
+                res.status(404).send("Aucun todo");
             }
             prisma.$disconnect();
         }
@@ -105,33 +114,36 @@ function destroyProject(req, res) {
         }
     });
 }
-function editProject(req, res) {
+function editTodo(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const { projectId } = req.params;
-            const { name, description } = req.body;
-            const project = yield prisma.project.findUnique({
+            const { todoId } = req.params;
+            const { title, description, checked } = req.body;
+            const todo = yield prisma.todo.findUnique({
                 where: {
-                    id: parseInt(projectId)
+                    id: parseInt(todoId)
                 }
             });
-            if (project) {
-                if (name && name !== project.name) {
-                    project.name = name;
+            if (todo) {
+                if (title && title !== todo.title) {
+                    todo.title = title;
                 }
-                if (description && description !== project.description) {
-                    project.description = description;
+                if (description && description !== todo.description) {
+                    todo.description = description;
                 }
-                yield prisma.project.update({
+                if (checked && checked !== todo.checked) {
+                    todo.checked = checked;
+                }
+                yield prisma.todo.update({
                     where: {
-                        id: parseInt(projectId)
+                        id: parseInt(todoId)
                     },
-                    data: project
+                    data: todo
                 });
-                res.status(200).json(project);
+                res.status(200).json(todo);
             }
             else {
-                res.status(200).send("Aucun project");
+                res.status(200).send("Aucun todo");
             }
             prisma.$disconnect();
         }

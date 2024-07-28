@@ -30,11 +30,15 @@ const express_1 = __importStar(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const projects_routes_1 = __importDefault(require("./routes/projects.routes"));
 const users_routes_1 = __importDefault(require("./routes/users.routes"));
+const dotenv_1 = require("dotenv");
+const auth_routes_1 = __importDefault(require("./routes/auth.routes"));
 const app = (0, express_1.default)();
+(0, dotenv_1.config)();
 app
     .use((0, cors_1.default)())
     .use((0, express_1.json)())
     .use((0, express_1.urlencoded)())
+    .use("/auth", auth_routes_1.default)
     .use("/projects", projects_routes_1.default)
     .use("/users", users_routes_1.default)
     .listen(3000, () => {

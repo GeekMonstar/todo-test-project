@@ -9,45 +9,26 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.indexProjects = indexProjects;
-exports.showProject = showProject;
-exports.createProject = createProject;
-exports.destroyProject = destroyProject;
-exports.editProject = editProject;
+exports.indexSubtodos = indexSubtodos;
+exports.showSubtodo = showSubtodo;
+exports.createSubtodo = createSubtodo;
+exports.destroySubtodo = destroySubtodo;
+exports.editSubtodo = editSubtodo;
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
-function indexProjects(req, res) {
+function indexSubtodos(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const projects = yield prisma.project.findMany();
-            if (projects) {
-                res.status(200).json(projects);
-            }
-            else {
-                res.status(200).send("Aucun project");
-            }
-            prisma.$disconnect();
-        }
-        catch (err) {
-            console.log(err);
-            res.json(err);
-        }
-    });
-}
-function showProject(req, res) {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            const { projectId } = req.params;
-            const project = yield prisma.project.findUnique({
-                where: {
-                    id: parseInt(projectId)
+            const subtodos = yield prisma.subtodo.findMany({
+                include: {
+                    todo: true
                 }
             });
-            if (project) {
-                res.status(200).json(project);
+            if (subtodos) {
+                res.status(200).json(subtodos);
             }
             else {
-                res.status(200).send("Aucun project");
+                res.status(200).send("Aucun subtodo");
             }
             prisma.$disconnect();
         }
@@ -57,22 +38,49 @@ function showProject(req, res) {
         }
     });
 }
-function createProject(req, res) {
+function showSubtodo(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const { subtodoId } = req.params;
+            const subtodo = yield prisma.subtodo.findUnique({
+                where: {
+                    id: parseInt(subtodoId)
+                },
+                include: {
+                    todo: true
+                }
+            });
+            if (subtodo) {
+                res.status(200).json(subtodo);
+            }
+            else {
+                res.status(200).send("Aucun subtodo");
+            }
+            prisma.$disconnect();
+        }
+        catch (err) {
+            console.log(err);
+            res.json(err);
+        }
+    });
+}
+function createSubtodo(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const { name, description } = req.body;
-            const project = yield prisma.project.create({
+            const { todoId } = req.params;
+            const subtodo = yield prisma.subtodo.create({
                 data: {
-                    name: name,
+                    title: name,
                     description: description,
-                    ownerId: 1
+                    todoId: parseInt(todoId)
                 }
             });
-            if (project) {
-                res.status(200).json(project);
+            if (subtodo) {
+                res.status(200).json(subtodo);
             }
             else {
-                res.status(200).send("Aucun project");
+                res.status(200).send("Aucun subtodo");
             }
             prisma.$disconnect();
         }
@@ -82,20 +90,20 @@ function createProject(req, res) {
         }
     });
 }
-function destroyProject(req, res) {
+function destroySubtodo(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const { projectId } = req.params;
-            const project = yield prisma.project.delete({
+            const { subtodoId } = req.params;
+            const subtodo = yield prisma.subtodo.delete({
                 where: {
-                    id: parseInt(projectId)
+                    id: parseInt(subtodoId)
                 }
             });
-            if (project) {
-                res.status(200).json(project);
+            if (subtodo) {
+                res.status(200).json(subtodo);
             }
             else {
-                res.status(200).send("Aucun project");
+                res.status(404).send("Aucun subtodo");
             }
             prisma.$disconnect();
         }
@@ -105,33 +113,36 @@ function destroyProject(req, res) {
         }
     });
 }
-function editProject(req, res) {
+function editSubtodo(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const { projectId } = req.params;
-            const { name, description } = req.body;
-            const project = yield prisma.project.findUnique({
+            const { subtodoId } = req.params;
+            const { title, description, checked } = req.body;
+            const subtodo = yield prisma.subtodo.findUnique({
                 where: {
-                    id: parseInt(projectId)
+                    id: parseInt(subtodoId)
                 }
             });
-            if (project) {
-                if (name && name !== project.name) {
-                    project.name = name;
+            if (subtodo) {
+                if (title && title !== subtodo.title) {
+                    subtodo.title = title;
                 }
-                if (description && description !== project.description) {
-                    project.description = description;
+                if (description && description !== subtodo.description) {
+                    subtodo.description = description;
                 }
-                yield prisma.project.update({
+                if (checked && checked !== subtodo.checked) {
+                    subtodo.checked = checked;
+                }
+                yield prisma.subtodo.update({
                     where: {
-                        id: parseInt(projectId)
+                        id: parseInt(subtodoId)
                     },
-                    data: project
+                    data: subtodo
                 });
-                res.status(200).json(project);
+                res.status(200).json(subtodo);
             }
             else {
-                res.status(200).send("Aucun project");
+                res.status(200).send("Aucun subtodo");
             }
             prisma.$disconnect();
         }
