@@ -60,12 +60,14 @@ function showProject(req, res) {
 function createProject(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const { name, description } = req.body;
+            const { name, description, ownerId } = req.body;
+            const { authToken } = req.cookies;
+            console.log(authToken);
             const project = yield prisma.project.create({
                 data: {
-                    name: name,
-                    description: description,
-                    ownerId: 1
+                    name,
+                    description,
+                    ownerId
                 }
             });
             if (project) {

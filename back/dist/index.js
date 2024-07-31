@@ -31,13 +31,17 @@ const cors_1 = __importDefault(require("cors"));
 const projects_routes_1 = __importDefault(require("./routes/projects.routes"));
 const users_routes_1 = __importDefault(require("./routes/users.routes"));
 const dotenv_1 = require("dotenv");
+const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const auth_routes_1 = __importDefault(require("./routes/auth.routes"));
+const authentication_middleware_1 = __importDefault(require("./middlewares/authentication.middleware"));
 const app = (0, express_1.default)();
 (0, dotenv_1.config)();
 app
+    .use((0, cookie_parser_1.default)())
     .use((0, cors_1.default)())
     .use((0, express_1.json)())
     .use((0, express_1.urlencoded)())
+    .use(authentication_middleware_1.default)
     .use("/auth", auth_routes_1.default)
     .use("/projects", projects_routes_1.default)
     .use("/users", users_routes_1.default)

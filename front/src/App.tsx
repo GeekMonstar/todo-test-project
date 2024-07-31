@@ -96,22 +96,34 @@ export default function App(){
   const [subtodos] = useState<SubtodoType[]>(initialSubtodosState);
   const [currentProjectId, setCurrentProjectId] = useState<number | null>(null)
   const [currentTodoId, setCurrentTodoId] = useState<number | null>(null);
+  const [user, setUser] = useState()
   // const location = useLocation();
 
-  useEffect(()=>{
-    // console.log(location)
-    const user = prisma.user.findMany();
-    console.log("user:", user);
-  })
+  useEffect(() => {
+    fetch('http://localhost:3000/auth/signin', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email: "contact@juanvianneynm.com", password: "secret" }),
+    })
+    .then(res => res.json())
+    .then(data => {
+      console.log(data);
+      setUser(data);
+    })
+    .catch(error => console.error('Error:', error));
+  }, []);
 
   return(
     <StateContext.Provider value={state}>
       <BrowserRouter>
-      <Header/>
+      {user ? <>
+        <Header/>
       <main className="container">
       <div className="projects">
           <div className="projects-container">
-            <Projects projects={projects}/>
+            <Projects/>
           </div>
       </div>
         <div  className="todos">
@@ -127,6 +139,9 @@ export default function App(){
           </Routes>
         </div>
       </main>
+      </>:
+      <>Auth</>
+      }
       </BrowserRouter>
     </StateContext.Provider>
   )
@@ -137,6 +152,22 @@ export default function App(){
 function Projects(){
   const state = useContext(StateContext)
   const [projects, setProjects] = useState<ProjectType[] | null>(null)
+
+  useEffect(() => {
+    fetch('http://localhost:3000/auth/signin', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email: "contact@juanvianneynm.com", password: "secret" }),
+    })
+    .then(res => res.json())
+    .then(data => {
+      console.log(data);
+      setUser(data);
+    })
+    .catch(error => console.error('Error:', error));
+  }, []);
 
   useEffect(()=>{
     state && setProjects(state.projects)
@@ -165,7 +196,7 @@ function Todos(props: TodosProps){
       setCurrentProjectId(parseInt(projectId))
     }
     // if(todoId) setCurrentTodoId(parseInt(todoId));
-    }, [todos, projectId, params])
+    }, [params])
   return (
     <>
       {currentTodos.map((todo) => (
@@ -184,15 +215,12 @@ function TodoDetails(props: TodoDetailsProps){
   const state = useContext(StateContext);
 
   useEffect(()=>{
-    console.log(params);
-    console.log(subtodos);
-
     if(todoId) setCurrentTodoId(parseInt(todoId))
     if(todoId && state){
       setTodo(state.todos.find(todo => todo.id == parseInt(todoId)))
       setSubTodos(subtodos.filter(subtodo => subtodo.todoId === todo?.id))
     }
-  }, [state, todo, todoId, subtodos, params, setCurrentTodoId])
+  }, [params])
   return (
     <div className="todo-details">
         <div className="todo-details-container">

@@ -103,12 +103,15 @@ export async function signin(req: Request, res: Response){
     const user = await prisma.user.findUnique({
       where: {
         email: email
+      },
+      include: {
+        Projects: true
       }
     });
-
+    console.log(req.path,{ depth: null})
     if(user && await compare(password, user.password)){
       const token = sign({userId: user.id},`${process.env.SECRET_KEY}` , {expiresIn: 36000*24})
-      res.cookie("Auth Token", token, {maxAge: 36000*24, httpOnly: true, secure: true}).json({ message: 'Logged in', token });
+      res.cookie("authToken", token, {maxAge: 36000*24, httpOnly: true, secure: true}).json(user);
     }else {
       res.status(401).json({ error: 'Invalid credentials' });
     }

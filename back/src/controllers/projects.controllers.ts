@@ -40,12 +40,14 @@ export async function showProject(req: Request, res: Response){
 
 export async function createProject(req: Request, res: Response){
   try{
-    const {name, description} = req.body;
+    const {name, description, ownerId} = req.body;
+    const {authToken} = req.cookies;
+    console.log(authToken);
     const project = await prisma.project.create({
       data:{
-        name: name,
-        description: description,
-        ownerId: 1
+        name,
+        description,
+        ownerId
       }
     })
     if(project){
